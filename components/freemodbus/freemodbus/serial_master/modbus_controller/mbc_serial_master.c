@@ -326,7 +326,7 @@ static uint8_t mbc_serial_master_get_command(const mb_parameter_descriptor_t* re
             break;
         default:
             ESP_LOGE(TAG, "%s: Incorrect param type (%u)",
-                            __FUNCTION__, param_type);
+                            __FUNCTION__, reg->param_type);
             break;
     }
     return command;
