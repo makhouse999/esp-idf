@@ -186,6 +186,9 @@ static esp_err_t mbc_serial_master_send_request(mb_param_request_t* request, voi
     mbm_opts->mbm_reg_buffer_ptr = (uint8_t*)data_ptr;
     mbm_opts->mbm_reg_buffer_size = mb_size;
 
+	// Clean the port event bit to avoid dummy messages receive in idle stage.
+	xMBMasterPortEventClear();
+
     // Calls appropriate request function to send request and waits response
     switch(mb_command)
     {
@@ -294,14 +297,15 @@ static esp_err_t mbc_serial_master_get_cid_info(uint16_t cid, const mb_parameter
 }
 
 // Helper function to get modbus command for each type of Modbus register area
-static uint8_t mbc_serial_master_get_command(mb_param_type_t param_type, mb_param_mode_t mode)
+static uint8_t mbc_serial_master_get_command(const mb_parameter_descriptor_t* reg, mb_param_mode_t mode)
 {
     uint8_t command = 0;
-    switch(param_type)
+    switch(reg->param_type)
     { //
         case MB_PARAM_HOLDING:
+			// Adapt some lagacy system which cannot regonize MB_FUNC_WRITE_MULTIPLE_REGISTERS. Use MB_FUNC_WRITE_REGISTER instead. 
             command = (mode == MB_PARAM_WRITE) ?
-                        MB_FUNC_WRITE_MULTIPLE_REGISTERS :
+                        (reg->mb_size == 1 ? MB_FUNC_WRITE_REGISTER : MB_FUNC_WRITE_MULTIPLE_REGISTERS) :
                         MB_FUNC_READ_HOLDING_REGISTER;
             break;
         case MB_PARAM_INPUT:
@@ -362,7 +366,7 @@ static esp_err_t mbc_serial_master_set_request(char* name, mb_param_mode_t mode,
             request->slave_addr = reg_ptr->mb_slave_addr;
             request->reg_start = reg_ptr->mb_reg_start;
             request->reg_size = reg_ptr->mb_size;
-            request->command = mbc_serial_master_get_command(reg_ptr->mb_param_type, mode);
+            request->command = mbc_serial_master_get_command(reg_ptr, mode);
             MB_MASTER_CHECK((request->command > 0),
                                 ESP_ERR_INVALID_ARG,
                                 "mb incorrect command or parameter type.");
