@@ -318,4 +318,12 @@ void vMBMasterPortEventClose(void)
     vEventGroupDelete(xResourceMasterHdl);
 }
 
+BOOL xMBMasterPortEventClear( void )
+{
+   BOOL bStatus = TRUE;
+   xEventGroupClearBits( xEventGroupMasterHdl, (MB_EVENT_REQ_MASK) );
+   return bStatus;
+}
+
+
 #endif

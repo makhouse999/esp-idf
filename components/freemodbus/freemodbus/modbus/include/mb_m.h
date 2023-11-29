@@ -409,6 +409,7 @@ eMBMasterErrorEventType eMBMasterGetErrorType( void );
 void vMBMasterSetErrorType( eMBMasterErrorEventType errorType );
 eMBMasterReqErrCode eMBMasterWaitRequestFinish( void );
 eMBMode ucMBMasterGetCommMode( void );
+BOOL xMBMasterPortEventClear( void );
 
 /* ----------------------- Callback -----------------------------------------*/
 
