@@ -300,7 +300,7 @@ static esp_err_t mbc_serial_master_get_cid_info(uint16_t cid, const mb_parameter
 static uint8_t mbc_serial_master_get_command(const mb_parameter_descriptor_t* reg, mb_param_mode_t mode)
 {
     uint8_t command = 0;
-    switch(reg->param_type)
+    switch(reg->mb_param_type)
     { //
         case MB_PARAM_HOLDING:
 			// Adapt some lagacy system which cannot regonize MB_FUNC_WRITE_MULTIPLE_REGISTERS. Use MB_FUNC_WRITE_REGISTER instead. 
